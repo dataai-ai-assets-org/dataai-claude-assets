@@ -1,0 +1,14 @@
+{
+  "name": "plugin-deck-merger",
+  "description": "Merge, reorder, and cherry-pick slides from multiple PPTX files into a single deck — copying slides verbatim so graphics, SmartArt, logos, and embedded objects survive untouched. Also includes tools to browse deck contents and pick slides interactively.",
+  "keywords": [
+    "pptx",
+    "presentation",
+    "merge",
+    "slides",
+    "elca",
+    "data-analytics-ai",
+    "sales-enablement"
+  ],
+  "license": "UNLICENSED"
+}

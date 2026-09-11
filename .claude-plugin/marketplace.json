@@ -1,0 +1,18 @@
+{
+  "name": "elca-deck-merger-plugin",
+  "description": "Internal Claude Code plugin for ELCA's Data, Analytics & AI Business Line — merge, reorder, and cherry-pick PowerPoint slides while preserving all formatting and embedded objects.",
+  "owner": {
+    "name": "Data, Analytics & AI Business Line",
+    "email": "CHANGE-ME@elca.ch"
+  },
+  "plugins": [
+    {
+      "name": "plugin-deck-merger",
+      "source": "./plugins/plugin-deck-merger",
+      "displayName": "Deck Merger",
+      "description": "Merge, reorder, and cherry-pick slides from multiple PPTX files into a single deck while preserving graphics, SmartArt, logos, and embedded objects.",
+      "category": "productivity",
+      "tags": ["pptx", "presentation", "merge", "slides", "elca", "sales-enablement"]
+    }
+  ]
+}
