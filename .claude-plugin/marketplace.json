@@ -1,6 +1,6 @@
 {
-  "name": "elca-deck-merger-plugin",
-  "description": "Internal Claude Code plugin for ELCA's Data, Analytics & AI Business Line — merge, reorder, and cherry-pick PowerPoint slides while preserving all formatting and embedded objects.",
+  "name": "elca-dataai-claude-marketplace",
+  "description": "Internal Claude marketplace for ELCA's Data, Analytics & AI Business Line",
   "owner": {
     "name": "Data, Analytics & AI Business Line",
     "email": "ankit.gupta@elca.ch"
