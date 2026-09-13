@@ -1,0 +1,13 @@
+{
+  "name": "plugin-ppt-generator",
+  "description": "Builds ELCA-branded PowerPoint decks for the Data, Analytics & AI Business Line — pre-sales decks for a named prospect, plus the branded PPTX rendering toolkit they are built on.",
+  "keywords": [
+    "pptx",
+    "presentation",
+    "pre-sales",
+    "elca",
+    "data-analytics-ai",
+    "sales-enablement"
+  ],
+  "license": "UNLICENSED"
+}

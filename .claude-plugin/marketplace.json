@@ -13,6 +13,14 @@
       "description": "Merge, reorder, and cherry-pick slides from multiple PPTX files into a single deck while preserving graphics, SmartArt, logos, and embedded objects.",
       "category": "productivity",
       "tags": ["pptx", "presentation", "merge", "slides", "elca", "sales-enablement"]
+    },
+    {
+      "name": "plugin-ppt-generator",
+      "source": "./plugins/plugin-ppt-generator",
+      "displayName": "BU Data & AI Sales Deck",
+      "description": "ELCA-branded PPTX rendering plus the pre-sales deck generator for Data & AI prospects.",
+      "category": "productivity",
+      "tags": ["pptx", "pre-sales", "sales-enablement", "elca"]
     }
   ]
 }
