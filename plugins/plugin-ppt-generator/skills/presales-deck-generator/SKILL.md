@@ -1,26 +1,26 @@
 ---
 name: presales-deck-generator
-description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Pulls together general ELCA slides, Data & AI BU slides, an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and 4-5 reference project slides. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
+description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Pulls together general ELCA slides, Data & AI BL slides, an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and 4-5 reference project slides. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
 ---
 
 # Pre-Sales Deck Generator
 
 Builds the deck ELCA's Data, Analytics & AI Business Line uses to open a first
-conversation with a prospect: who ELCA is, what the BU does, what's specific
+conversation with a prospect: who ELCA is, what the BL does, what's specific
 to the prospect's industry, a few AI ideas worth discussing tailored to that
 one company, and proof points from real engagements.
 
 ## Why this skill is shaped the way it is
 
 Most of a pre-sales deck should say the same thing every time — ELCA's
-facts don't change between calls, and the BU's capabilities don't either.
+facts don't change between calls, and the BL's capabilities don't either.
 Regenerating that content per call wastes time and risks drifting off
 message. So this skill treats the deck as **mostly a maintained content
 library, with one genuinely dynamic slide**: the AI use cases, which have to
 be specific to the company in front of you or they're not worth including.
 
 Concretely: `scripts/content_library.py` holds everything that's the same
-every time (general ELCA facts, the BU's mission/stats/domains, industry
+every time (general ELCA facts, the BL's mission/stats/domains, industry
 modules, reference projects). `scripts/build_presales_deck.py` assembles a
 deck from that library plus the handful of things that change per call. Your
 job when this skill triggers is to gather those per-call things, then run
@@ -82,7 +82,7 @@ first five minutes of a sales call.
 
 From the research, draft 3-4 plausible AI use cases specific to this
 company, in ELCA's voice (data-driven, results-oriented, partnership
-framing — see `DATAAI_BU['mission']` in the content library for the tone).
+framing — see `DATAAI_BL['mission']` in the content library for the tone).
 Each use case is a dict:
 
 ```python
@@ -116,8 +116,8 @@ a way that damages trust with a real customer:
   four generic ones. Three is a fine number; two is acceptable; don't pad.
 - Every use case needs a `source` a human could actually check. "Industry
   best practice" is not a source — a specific page, statement, or fact is.
-- Tie each use case back to one of the BU's actual solution domains
-  (`DATAAI_BU['domains']`) where you can — it should read as something ELCA
+- Tie each use case back to one of the BL's actual solution domains
+  (`DATAAI_BL['domains']`) where you can — it should read as something ELCA
   is positioned to deliver, not a generic AI idea anyone could pitch.
 
 ### Step 4 — Pick reference projects
@@ -195,17 +195,17 @@ before it's in front of the prospect, however well-sourced.
 
 `scripts/content_library.py` is the single source of truth for everything
 that isn't per-call. It's plain, commented Python — no engineering
-background needed to edit it. When ELCA's general facts, the BU's stats, or
+background needed to edit it. When ELCA's general facts, the BL's stats, or
 an industry module need updating, edit that file directly rather than
 hard-coding a one-off change in a build script; every future deck should
 benefit from the update, not just the one you're building today.
 
 This skill ships in the **plugin-ppt-generator** plugin alongside
-elca-pptx, so BU champions — not just whoever happens to be running this
+elca-pptx, so BL champions — not just whoever happens to be running this
 session — can maintain `content_library.py` over time. Edits go to the
 plugin repository and reach everyone on the next `/plugin update`. See the
 plugin's commit history for what's changed and when re-pulling from the
-source SharePoint decks (2026 Corporate Deck, DataAI BU intro slides, All
+source SharePoint decks (2026 Corporate Deck, DataAI BL intro slides, All
 References OnePager — all under PublicCorporateAssets/Corp Decks PPTs/2026)
 is overdue.
 

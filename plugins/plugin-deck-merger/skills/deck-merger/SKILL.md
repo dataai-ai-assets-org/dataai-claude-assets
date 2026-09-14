@@ -1,6 +1,6 @@
 ---
 name: deck-merger
-description: "Build one PowerPoint out of slides cherry-picked from two or more existing .pptx files, copying each slide verbatim so its graphics, SmartArt, embedded objects, fonts and theme survive untouched. Use this skill whenever someone wants to combine, merge, splice, assemble or cut down decks — 'make a deck from the corporate deck plus the BU deck', 'take slides 2-7 and 9-11 from this one and 4-8 from that one', 'strip this deck down to just these slides', 'put together a client deck from our slide library'. Also use it when only one deck is involved but slides need to be removed or reordered, and whenever a previous attempt at rebuilding slides in python-pptx or pptxgenjs lost logos, vector art, diagrams or exact positioning. Use it too when someone wants to browse or pick from what is in their decks — 'show me a catalog of the slides', 'let me choose which slides to include', 'which slides are in these decks' — since it builds an interactive checkbox picker for exactly that."
+description: "Build one PowerPoint out of slides cherry-picked from two or more existing .pptx files, copying each slide verbatim so its graphics, SmartArt, embedded objects, fonts and theme survive untouched. Use this skill whenever someone wants to combine, merge, splice, assemble or cut down decks — 'make a deck from the corporate deck plus the BL deck', 'take slides 2-7 and 9-11 from this one and 4-8 from that one', 'strip this deck down to just these slides', 'put together a client deck from our slide library'. Also use it when only one deck is involved but slides need to be removed or reordered, and whenever a previous attempt at rebuilding slides in python-pptx or pptxgenjs lost logos, vector art, diagrams or exact positioning. Use it too when someone wants to browse or pick from what is in their decks — 'show me a catalog of the slides', 'let me choose which slides to include', 'which slides are in these decks' — since it builds an interactive checkbox picker for exactly that."
 ---
 
 # Deck Merger
@@ -65,7 +65,7 @@ The default way to agree a slide list is the picker: a checkbox catalog of every
 deck that sends its own merge instruction back to chat.
 
 ```bash
-python3 scripts/build_picker.py corporate.pptx business_unit.pptx \
+python3 scripts/build_picker.py corporate.pptx business_line.pptx \
     --label "Corp deck 2026" --label "Data & AI" -o picker.html
 ```
 
@@ -108,7 +108,7 @@ improve the deck; mention them afterwards instead.
 ```bash
 python3 scripts/merge_decks.py -o output.pptx \
     --deck corporate.pptx --slides 2-7,9-11 \
-    --deck business_unit.pptx --slides 4-8,10
+    --deck business_line.pptx --slides 4-8,10
 ```
 
 - The **first** `--deck` is the base package: its master, theme, size and

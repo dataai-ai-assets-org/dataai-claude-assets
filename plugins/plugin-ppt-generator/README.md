@@ -9,7 +9,7 @@ so they install, version, and update as one unit.
 | Skill | What it does | Triggers on |
 |---|---|---|
 | `elca-pptx` | Builds natively ELCA-branded PPTX from the ELCA / ELCAi templates — correct fonts, colors, bullets — using the `T()` / `LL()` helpers that avoid overriding layout styling. | Any request to create, rebuild, or add slides to an ELCA-looking deck; also fixing decks with wrong colors, missing bullets, or overridden fonts. |
-| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: general ELCA slides, Data & AI BU slides, an industry module, a company-specific AI use-case slide grounded in public research, and 4–5 reference projects. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
+| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: general ELCA slides, Data & AI BL slides, an industry module, a company-specific AI use-case slide grounded in public research, and 4–5 reference projects. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
 
 `presales-deck-generator` renders through `elca-pptx` rather than drawing
 slides itself. That dependency is the reason these two travel together:
@@ -49,14 +49,14 @@ claude --plugin-dir ./plugin-ppt-generator
 ```
 
 Then `/reload-plugins` to pick up edits without restarting. To distribute it
-to the BU, publish it through a plugin marketplace repository; see
+to the BL, publish it through a plugin marketplace repository; see
 https://code.claude.com/docs/en/plugin-marketplaces.
 
 ## Maintenance
 
-- **Content changes** (ELCA facts, BU stats, industry modules, reference
+- **Content changes** (ELCA facts, BL stats, industry modules, reference
   projects) go in `skills/presales-deck-generator/scripts/content_library.py`.
-  That file is plain, commented Python and is meant to be edited by BU
+  That file is plain, commented Python and is meant to be edited by BL
   champions, not only by engineers.
 - **Versioning is by commit.** `plugin.json` deliberately has no `version` field,
   so Claude Code resolves the version from the marketplace repo's commit SHA and

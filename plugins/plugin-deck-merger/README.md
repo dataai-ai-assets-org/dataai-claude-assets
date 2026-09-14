@@ -8,7 +8,7 @@ The **deck-merger** skill combines, reorders, and filters slides from multiple P
 
 | Task | Use this skill |
 |---|---|
-| Merge two or more decks into one | "Combine the corporate deck with the BU deck" |
+| Merge two or more decks into one | "Combine the corporate deck with the BL deck" |
 | Pick specific slides from decks | "Take slides 2-7 and 9-11 from this one" |
 | Reorder or trim a deck | "Strip this deck down to just these slides" |
 | Browse a deck's contents | "Show me what's in these presentations" |
@@ -23,7 +23,7 @@ python3 scripts/inspect_deck.py deck_a.pptx deck_b.pptx
 
 **Step 2: Choose** — use an interactive checkbox picker to select slides (or describe them in prose)
 ```bash
-python3 scripts/build_picker.py corporate.pptx business_unit.pptx \
+python3 scripts/build_picker.py corporate.pptx business_line.pptx \
     --label "Corp 2026" --label "Data & AI" -o picker.html
 ```
 
@@ -31,7 +31,7 @@ python3 scripts/build_picker.py corporate.pptx business_unit.pptx \
 ```bash
 python3 scripts/merge_decks.py -o output.pptx \
     --deck corporate.pptx --slides 2-7,9-11 \
-    --deck business_unit.pptx --slides 4-8,10
+    --deck business_line.pptx --slides 4-8,10
 ```
 
 **Step 4: Validate & inspect** — check the result and hand it over
@@ -81,7 +81,7 @@ Local test run, from the directory containing the plugin folder:
 claude --plugin-dir ./plugin-deck-merger
 ```
 
-Then use `/reload-plugins` to pick up edits without restarting. To distribute it to the BU, publish through a plugin marketplace repository; see https://code.claude.com/docs/en/plugin-marketplaces.
+Then use `/reload-plugins` to pick up edits without restarting. To distribute it to the BL, publish through a plugin marketplace repository; see https://code.claude.com/docs/en/plugin-marketplaces.
 
 ## Key workflows
 

@@ -18,7 +18,7 @@ Key features:
 
 ## Marketplace
 
-The top-level `.claude-plugin/marketplace.json` defines how these plugins are discovered and listed when published to a Claude Code plugin marketplace. Update the `owner` field with the BU contact email and version information as needed.
+The top-level `.claude-plugin/marketplace.json` defines how these plugins are discovered and listed when published to a Claude Code plugin marketplace. Update the `owner` field with the BL contact email and version information as needed.
 
 ## Structure
 
@@ -62,7 +62,7 @@ See https://code.claude.com/docs/en/plugin-marketplaces for full distribution do
 
 ## Maintenance
 
-- **Content updates** (company facts, BU stats, use cases, reference projects) go in the `scripts/` folders under each skill
+- **Content updates** (company facts, BL stats, use cases, reference projects) go in the `scripts/` folders under each skill
 - **Skill logic** lives in `.md` files alongside the scripts
 - **Plugin metadata** is in `.claude-plugin/plugin.json`
 - **Marketplace configuration** is in `.claude-plugin/marketplace.json` at the repo root

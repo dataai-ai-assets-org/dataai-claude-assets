@@ -1,2 +1,3 @@
 evals/results/
 eval-result.json
+__pycache__/

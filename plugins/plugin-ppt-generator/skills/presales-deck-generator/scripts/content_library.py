@@ -2,11 +2,11 @@
 Content library for the presales-deck-generator skill.
 
 This is the single source of truth for the "static" parts of every pre-sales
-deck: general ELCA facts, the Data & AI Business Unit content, the reusable
+deck: general ELCA facts, the Data & AI Business Line content, the reusable
 reference-project library, and industry modules. build_presales_deck.py
 imports this file directly.
 
-WHO EDITS THIS FILE: whoever ELCA's Data & AI BU nominates as skill
+WHO EDITS THIS FILE: whoever ELCA's Data & AI BL nominates as skill
 champions (see the department's shared plugin marketplace). No engineering
 background is required — it's plain Python dicts and lists, organised by
 clearly labelled section. Keep entries short: this content is meant to be
@@ -85,10 +85,10 @@ GENERAL_ELCA = {
 }
 
 # ---------------------------------------------------------------------------
-# SECTION 2 — Data, Analytics & AI Business Unit content
+# SECTION 2 — Data, Analytics & AI Business Line content
 # ---------------------------------------------------------------------------
 
-DATAAI_BU = {
+DATAAI_BL = {
     "mission": {
         "title": "We Love to Make You Successful With Data, Analytics & AI",
         "bullets": [
@@ -100,8 +100,8 @@ DATAAI_BU = {
         ],
     },
     "strength": {
-        "title": "A Strong Business Unit",
-        "subtitle": "ELCA has a strong Business Unit on Data, Analytics & AI",
+        "title": "A Strong Business Line",
+        "subtitle": "ELCA has a strong Business Line on Data, Analytics & AI",
         "pillars": [
             (">30 years", ["Of experience in Data, Analytics & AI"]),
             (">75 specialists", ["Local in Switzerland: Zürich, Bern, Basel, Lausanne, Geneva"]),
@@ -140,7 +140,7 @@ DATAAI_BU = {
 # ---------------------------------------------------------------------------
 # Curated from "All References OnePager" on SharePoint (PublicCorporateAssets/
 # Corp Decks PPTs/2026). That source deck tracks ~129 references across the
-# BU; only a handful had complete, presentable content at the time this file
+# BL; only a handful had complete, presentable content at the time this file
 # was written. ADD MORE ENTRIES HERE as champions pull them from the master
 # library — that master deck states these industry totals as of writing:
 # Public Administration 30, Financial Services 21, Transportation &

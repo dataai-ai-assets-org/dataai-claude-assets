@@ -63,7 +63,7 @@ sys.path.insert(0, os.path.join(ELCA_PPTX_SKILL_DIR, "scripts"))
 
 from pptx import Presentation
 from pptx_helpers import T, LL
-from content_library import GENERAL_ELCA, DATAAI_BU, REFERENCES, INDUSTRY_MODULES
+from content_library import GENERAL_ELCA, DATAAI_BL, REFERENCES, INDUSTRY_MODULES
 
 TEMPLATE = os.path.join(ELCA_PPTX_SKILL_DIR, "ELCA PPT Template.pptx")
 
@@ -166,11 +166,11 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path,
     T(s, 14, 'We love to make you successful with Data, Analytics & AI.')
 
     s = A('Text Content only 1')
-    T(s, 0, DATAAI_BU['mission']['title'])
-    LL(s, 1, DATAAI_BU['mission']['bullets'])
+    T(s, 0, DATAAI_BL['mission']['title'])
+    LL(s, 1, DATAAI_BL['mission']['bullets'])
 
-    _pillars_slide(A, 'Pillars_4col', DATAAI_BU['strength'])
-    _pillars_slide(A, 'Pillars_4col', DATAAI_BU['domains'])
+    _pillars_slide(A, 'Pillars_4col', DATAAI_BL['strength'])
+    _pillars_slide(A, 'Pillars_4col', DATAAI_BL['domains'])
 
     # 5. Chapter 03 — Industry module (or an honest gap slide)
     # Chapter title must stay short (one line) — the layout's tagline (idx14)

@@ -2,7 +2,7 @@
 build_picker.py — emit the HTML for an interactive slide picker so the user can
 tick the slides they want instead of reading an inventory and typing numbers.
 
-    python3 build_picker.py corporate.pptx business_unit.pptx > picker.html
+    python3 build_picker.py corporate.pptx business_line.pptx > picker.html
     python3 build_picker.py corp.pptx --label "Corp deck" bl.pptx --label "Data & AI" \
         --preselect "1:2-12" --preselect "2:4-13"
 

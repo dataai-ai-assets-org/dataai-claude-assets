@@ -17,7 +17,7 @@
     {
       "name": "plugin-ppt-generator",
       "source": "./plugins/plugin-ppt-generator",
-      "displayName": "BU Data & AI Sales Deck",
+      "displayName": "BL Data & AI Sales Deck",
       "description": "ELCA-branded PPTX rendering plus the pre-sales deck generator for Data & AI prospects.",
       "category": "productivity",
       "tags": ["pptx", "pre-sales", "sales-enablement", "elca"]
