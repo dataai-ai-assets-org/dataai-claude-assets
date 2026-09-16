@@ -9,7 +9,7 @@ so they install, version, and update as one unit.
 | Skill | What it does | Triggers on |
 |---|---|---|
 | `elca-pptx` | Builds natively ELCA-branded PPTX from the ELCA / ELCAi templates — correct fonts, colors, bullets — using the `T()` / `LL()` helpers that avoid overriding layout styling. | Any request to create, rebuild, or add slides to an ELCA-looking deck; also fixing decks with wrong colors, missing bullets, or overridden fonts. |
-| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: general ELCA slides, Data & AI BL slides, an industry module, a company-specific AI use-case slide grounded in public research, and reference-project slides merged in verbatim from a reference deck the user points to. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
+| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: an industry module, a company-specific AI use-case slide grounded in live public research, and reference-project slides merged in verbatim from a reference deck the user points to — no general ELCA or Business Line content, just what's specific to the call. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
 
 `presales-deck-generator` renders through `elca-pptx` rather than drawing
 slides itself. That dependency is the reason these two travel together:
@@ -59,7 +59,8 @@ https://code.claude.com/docs/en/plugin-marketplaces.
 
 ## Maintenance
 
-- **Content changes** (ELCA facts, BL stats, industry modules) go in
+- **Content changes** (industry modules only — no general ELCA or Business
+  Line content lives here) go in
   `skills/presales-deck-generator/scripts/content_library.py`. That file is
   plain, commented Python and is meant to be edited by BL champions, not
   only by engineers. Reference-project content is not in this file — it's

@@ -15,7 +15,7 @@ a deterministic script should never invent it.
 This script does NOT produce reference-project slides either. It only adds a
 "References" chapter-divider slide as an anchor point. The actual reference
 slides are spliced in afterwards, verbatim, from a reference deck the user
-supplies — see "Dependency: deck-merger" and Step 4 in
+supplies — see "Dependency: deck-merger" and Step 5 in
 presales-deck-generator/SKILL.md.
 
 Usage: edit the CONFIG block at the bottom (or import build_deck() from
@@ -67,7 +67,7 @@ sys.path.insert(0, os.path.join(ELCA_PPTX_SKILL_DIR, "scripts"))
 
 from pptx import Presentation
 from pptx_helpers import T, LL
-from content_library import GENERAL_ELCA, DATAAI_BL, INDUSTRY_MODULES
+from content_library import INDUSTRY_MODULES
 
 TEMPLATE = os.path.join(ELCA_PPTX_SKILL_DIR, "ELCA PPT Template.pptx")
 
@@ -97,7 +97,7 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
     out_path: where to save the .pptx
 
     Does not take reference-project content — see the module docstring and
-    Step 4 in presales-deck-generator/SKILL.md for how those get merged in
+    Step 5 in presales-deck-generator/SKILL.md for how those get merged in
     afterwards from a user-supplied reference deck.
     """
     prs = Presentation(TEMPLATE)
@@ -125,10 +125,9 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
     industry_label = INDUSTRY_MODULES.get(industry_key, {}).get(
         'title', f'{company} — Context & Opportunities'
     )
-    LL(s, 18, ['About ELCA', 'Data, Analytics & AI at ELCA', industry_label,
-               f'Possible AI Use Cases for {company}', 'References', 'Next Steps'])
-    LL(s, 19, ['Who we are, at a glance', 'Our Business Line, capabilities and 2026 focus',
-               'Where we can help', 'Ideas to discuss and validate together',
+    LL(s, 18, [industry_label, f'Possible AI Use Cases for {company}',
+               'References', 'Next Steps'])
+    LL(s, 19, ['Where we can help', 'Ideas to discuss and validate together',
                'Proof points from recent engagements', 'How we can move forward together'])
 
     # 2b. Context (optional) — deal stage / what's already known about the
@@ -138,35 +137,13 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
         T(s, 0, f'Where We\'re Starting With {company}')
         LL(s, 1, [context])
 
-    # 3. Chapter 01 — About ELCA
-    s = A('Chapter Slide 1')
-    T(s, 0, '01')
-    T(s, 1, 'About ELCA')
-    T(s, 14, 'An independent Swiss IT company, in business since 1968.')
-
-    _pillars_slide(A, 'Pillars_4col', GENERAL_ELCA['glance'])
-    _pillars_slide(A, 'Pillars_2col', GENERAL_ELCA['local_partner'])
-    _pillars_slide(A, 'Pillars_3col', GENERAL_ELCA['group_structure'])
-    _pillars_slide(A, 'Pillars_4col', GENERAL_ELCA['services'])
-
-    # 4. Chapter 02 — Data, Analytics & AI at ELCA
-    s = A('Chapter Slide 1')
-    T(s, 0, '02')
-    T(s, 1, 'Data, Analytics & AI')
-    T(s, 14, 'We love to make you successful with Data, Analytics & AI.')
-
-    s = A('Text Content only 1')
-    T(s, 0, DATAAI_BL['mission']['title'])
-    LL(s, 1, DATAAI_BL['mission']['bullets'])
-
-    _pillars_slide(A, 'Pillars_4col', DATAAI_BL['strength'])
-    _pillars_slide(A, 'Pillars_4col', DATAAI_BL['domains'])
-
-    # 5. Chapter 03 — Industry module (or an honest gap slide)
+    # 3. Chapter 01 — Industry module (or an honest gap slide). This is the
+    # deck's first content chapter: the skill carries no general ELCA or
+    # Data & AI Business Line content, only what's specific to this call.
     # Chapter title must stay short (one line) — the layout's tagline (idx14)
     # sits at a fixed position right below it, same risk as the title slide.
     s = A('Chapter Slide 1')
-    T(s, 0, '03')
+    T(s, 0, '01')
     module = INDUSTRY_MODULES.get(industry_key)
     if module:
         short_title = module.get('short_title') or (industry_key or company).replace('-', ' ').title()
@@ -180,7 +157,7 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
         T(s, 0, f'What We Understand About {company}')
         LL(s, 1, [context] if context else ['Add what you know about the prospect here.'])
 
-    # 6. AI Use Cases — the one genuinely dynamic content slide
+    # 4. AI Use Cases — the one genuinely dynamic content slide
     s = A('Pillars_4col' if len(ai_use_cases) >= 4 else 'Pillars_3col')
     T(s, 0, f'Possible AI Use Cases for {company}')
     T(s, 1, 'Draft ideas for discussion — grounded in public information, to validate together')
@@ -189,18 +166,18 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
         T(s, title_idx, uc['headline'])
         LL(s, body_idx, [uc['description'], '', f"Source: {uc['source']}"])
 
-    # 7. References — a chapter divider only. This script never renders
+    # 5. References — a chapter divider only. This script never renders
     # reference content itself; the actual slides get spliced in right after
     # this divider, verbatim, from a reference deck the user supplies (see
-    # Step 4 in SKILL.md). Run inspect_deck.py on the saved output to find
+    # Step 5 in SKILL.md). Run inspect_deck.py on the saved output to find
     # this slide's exact position before calling merge_decks.py — it shifts
     # depending on whether the context and industry-module slides above ran.
     s = A('Chapter Slide 1')
-    T(s, 0, '04')
+    T(s, 0, '02')
     T(s, 1, 'References')
     T(s, 14, 'Proof points from recent engagements.')
 
-    # 8. Contact
+    # 6. Contact
     s = A('Final/Contact Slide')
     T(s, 0, "Let's Talk.")
     T(s, 1, f'Ready to explore what Data, Analytics & AI can do for {company}?')

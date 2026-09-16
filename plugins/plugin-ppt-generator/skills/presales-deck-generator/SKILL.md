@@ -1,35 +1,35 @@
 ---
 name: presales-deck-generator
-description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Pulls together general ELCA slides, Data & AI BL slides, an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and reference-project slides merged in from a reference deck the user points to. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
+description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Researches the prospect live and pulls together an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and reference-project slides merged in from a reference deck the user points to — no general ELCA or Business Line content, just what's specific to this call, rendered in ELCA style. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
 ---
 
 # Pre-Sales Deck Generator
 
 Builds the deck ELCA's Data, Analytics & AI Business Line uses to open a first
-conversation with a prospect: who ELCA is, what the BL does, what's specific
-to the prospect's industry, a few AI ideas worth discussing tailored to that
-one company, and proof points from real engagements.
+conversation with a prospect: what's specific to the prospect's industry, a
+few AI ideas worth discussing tailored to that one company, and proof points
+from real engagements — rendered in ELCA style.
 
 ## Why this skill is shaped the way it is
 
-Most of a pre-sales deck should say the same thing every time — ELCA's
-facts don't change between calls, and the BL's capabilities don't either.
-Regenerating that content per call wastes time and risks drifting off
-message. So this skill treats the deck as **mostly a maintained content
-library, with one genuinely dynamic slide**: the AI use cases, which have to
-be specific to the company in front of you or they're not worth including.
+This skill is deliberately not a "corporate deck generator." It carries no
+general ELCA content and no Data & AI Business Line content — no "who we
+are" chapter, no capability/mission slides. Every real pre-sales
+conversation needs those covered elsewhere (a corporate deck, a leave-behind,
+whatever the account team already uses); baking a static copy into this
+skill would just be one more place for that messaging to drift out of sync
+with the real thing.
 
-Concretely: `scripts/content_library.py` holds everything that's the same
-every time (general ELCA facts, the BL's mission/stats/domains, industry
-modules). `scripts/build_presales_deck.py` assembles a deck from that library
-plus the handful of things that change per call. Your job when this skill
-triggers is to gather those per-call things, then run the script — not to
-write slide content from scratch each time.
-
-Reference-project slides are the one exception to "maintained library plus a
-handful of per-call things": there's no maintained reference library at all.
-Every call gets its reference slides fresh, merged verbatim from a deck the
-user points to — see Step 4.
+What this skill actually does is narrow and live: take a company name (and
+optional industry/context), research the prospect on the public web, draft
+AI ideas grounded in that research, and render the result in ELCA's visual
+style via elca-pptx. The only thing worth maintaining centrally is the
+industry-module framework in `scripts/content_library.py` — ELCA's own
+curated pitch angle per vertical, which a web search wouldn't reliably
+reconstruct the same way twice. Reference-project slides get the same
+treatment as everything else here: nothing pre-loaded, every call gets its
+reference slides fresh, merged verbatim from a deck the user points to — see
+Step 5.
 
 ## Dependency: elca-pptx
 
@@ -53,11 +53,11 @@ black pillar titles and broken bullets.
 
 Reference-project slides come from the **deck-merger** skill, which ships in
 the separate **plugin-deck-merger** plugin — not bundled here the way
-elca-pptx is. Check it's installed (`/plugin list`) before Step 4; if it
+elca-pptx is. Check it's installed (`/plugin list`) before Step 5; if it
 isn't, tell the user and skip references for this call rather than
 fabricating slide content by hand.
 
-deck-merger's `inspect_deck.py` and `merge_decks.py` are what Step 4 uses.
+deck-merger's `inspect_deck.py` and `merge_decks.py` are what Step 5 uses.
 Read deck-merger's own SKILL.md if you haven't used it before — the
 principles that matter here are the same ones it's built around: copy slide
 XML verbatim rather than rebuild it, and never silently hide a gap (a hidden
@@ -75,10 +75,10 @@ there's no reasonable default. Also try to get:
   company. Match it to a key in `INDUSTRY_MODULES` in
   `scripts/content_library.py` — the current keys are listed at the top of
   that dict. Getting this right matters: it decides which industry module
-  the deck uses, and guides which reference slides you pick in Step 4.
+  the deck uses, and guides which reference slides you pick in Step 5.
 - **A reference deck**, if the user gave a path or link to one in their
   prompt. If they didn't, ask once; if they say they don't have one handy,
-  proceed without references for this call (Step 4 covers what to do then).
+  proceed without references for this call (Step 5 covers what to do then).
 - **Context**: deal stage, what's already known about the prospect's
   situation, who's running the call. This becomes the title-slide subtitle
   and, when there's no industry module, the fallback "what we understand"
@@ -103,9 +103,9 @@ first five minutes of a sales call.
 ### Step 3 — Draft 3-4 AI use cases
 
 From the research, draft 3-4 plausible AI use cases specific to this
-company, in ELCA's voice (data-driven, results-oriented, partnership
-framing — see `DATAAI_BL['mission']` in the content library for the tone).
-Each use case is a dict:
+company, in ELCA's voice: data-driven, results-oriented, partnership
+framing — a peer offering to help solve a real problem, not a vendor
+pitching a generic capability. Each use case is a dict:
 
 ```python
 {"headline": "Short, punchy title (≤ ~25 characters)",
@@ -138,9 +138,9 @@ a way that damages trust with a real customer:
   four generic ones. Three is a fine number; two is acceptable; don't pad.
 - Every use case needs a `source` a human could actually check. "Industry
   best practice" is not a source — a specific page, statement, or fact is.
-- Tie each use case back to one of the BL's actual solution domains
-  (`DATAAI_BL['domains']`) where you can — it should read as something ELCA
-  is positioned to deliver, not a generic AI idea anyone could pitch.
+- Each use case should read as something ELCA's Data & AI Business Line is
+  actually positioned to deliver (cloud data platforms, AI applications,
+  data quality, data governance) — not a generic AI idea anyone could pitch.
 
 ### Step 4 — Build the base deck
 
@@ -162,7 +162,7 @@ build_deck(
 )
 ```
 
-This deck ends with a "References" chapter divider (title "04") followed
+This deck ends with a "References" chapter divider (title "02") followed
 immediately by the Contact slide — no reference content yet. That's Step 5.
 
 ### Step 5 — Merge in reference-project slides
@@ -185,7 +185,7 @@ deck has no reference slides — never invent one to avoid an empty section.
    reference yet" — rather than presenting them as same-industry.
 3. **Locate the insertion point.** Run deck-merger's `inspect_deck.py` on
    the *base deck from Step 4* to find the exact 1-based position of the
-   "References" chapter-divider slide (title "04") and the slide right
+   "References" chapter-divider slide (title "02") and the slide right
    after it (the Contact slide). These positions shift depending on whether
    the context slide (Step 1) and a real industry module (vs. the fallback
    gap slide) were included, so always look them up on the actual file —
@@ -247,20 +247,18 @@ before it's in front of the prospect, however well-sourced.
 
 ## Maintaining the content library
 
-`scripts/content_library.py` is the single source of truth for everything
-that isn't per-call. It's plain, commented Python — no engineering
-background needed to edit it. When ELCA's general facts, the BL's stats, or
-an industry module need updating, edit that file directly rather than
-hard-coding a one-off change in a build script; every future deck should
-benefit from the update, not just the one you're building today.
+`scripts/content_library.py` only holds `INDUSTRY_MODULES` — there's no
+general ELCA or Business Line content in this skill to maintain. It's plain,
+commented Python — no engineering background needed to edit it. When an
+industry module needs adding or updating, edit that file directly rather
+than hard-coding a one-off change in a build script; every future deck for
+that industry should benefit from the update, not just the one you're
+building today.
 
 This skill ships in the **plugin-ppt-generator** plugin alongside
 elca-pptx, so BL champions — not just whoever happens to be running this
 session — can maintain `content_library.py` over time. Edits go to the
-plugin repository and reach everyone on the next `/plugin update`. See the
-plugin's commit history for what's changed and when re-pulling from the
-source SharePoint decks (2026 Corporate Deck and the DataAI BL intro slides,
-under PublicCorporateAssets/Corp Decks PPTs/2026) is overdue.
+plugin repository and reach everyone on the next `/plugin update`.
 
 Adding a new industry module: add an entry to `INDUSTRY_MODULES` following
 the existing `financial-services` example — a title, subtitle, and up to

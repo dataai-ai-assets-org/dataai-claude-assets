@@ -62,7 +62,7 @@ See https://code.claude.com/docs/en/plugin-marketplaces for full distribution do
 
 ## Maintenance
 
-- **Content updates** (company facts, BL stats, use cases) go in the `scripts/` folders under each skill
+- **Content updates** (e.g. presales-deck-generator's industry modules) go in the `scripts/` folders under each skill
 - **Skill logic** lives in `.md` files alongside the scripts
 - **Plugin metadata** is in `.claude-plugin/plugin.json`
 - **Marketplace configuration** is in `.claude-plugin/marketplace.json` at the repo root
