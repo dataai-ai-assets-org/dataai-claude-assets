@@ -9,7 +9,7 @@ so they install, version, and update as one unit.
 | Skill | What it does | Triggers on |
 |---|---|---|
 | `elca-pptx` | Builds natively ELCA-branded PPTX from the ELCA / ELCAi templates — correct fonts, colors, bullets — using the `T()` / `LL()` helpers that avoid overriding layout styling. | Any request to create, rebuild, or add slides to an ELCA-looking deck; also fixing decks with wrong colors, missing bullets, or overridden fonts. |
-| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: an industry module, a company-specific AI use-case slide grounded in live public research, and reference-project slides merged in verbatim from a reference deck the user points to — no general ELCA or Business Line content, just what's specific to the call. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
+| `presales-deck-generator` | Assembles a first-call pre-sales deck for a named prospect: an industry-opportunity slide and a company-specific AI use-case slide, both drafted live from public research, plus reference-project slides merged in verbatim from a reference deck the user points to — no general ELCA or Business Line content, no maintained content library at all, just what's specific to the call. | "Build me a deck for our call with Acme AG", "slides for the first meeting with …", regenerating an existing pre-sales deck for a different company. |
 
 `presales-deck-generator` renders through `elca-pptx` rather than drawing
 slides itself. That dependency is the reason these two travel together:
@@ -38,8 +38,7 @@ plugin-ppt-generator/
     └── presales-deck-generator/
         ├── SKILL.md
         └── scripts/
-            ├── content_library.py      # the maintained, non-per-call content
-            └── build_presales_deck.py  # assembles the deck
+            └── build_presales_deck.py  # assembles the deck from per-call content
 ```
 
 Component directories sit at the plugin root, never inside `.claude-plugin/`
@@ -59,12 +58,11 @@ https://code.claude.com/docs/en/plugin-marketplaces.
 
 ## Maintenance
 
-- **Content changes** (industry modules only — no general ELCA or Business
-  Line content lives here) go in
-  `skills/presales-deck-generator/scripts/content_library.py`. That file is
-  plain, commented Python and is meant to be edited by BL champions, not
-  only by engineers. Reference-project content is not in this file — it's
-  supplied per call as a reference deck the user points to.
+- **There is no maintained content library.** `presales-deck-generator` has
+  no general ELCA content, no Business Line content, and no industry-module
+  dict — everything (industry angle, AI use cases, references) is drafted
+  or sourced fresh per call. See "Why this skill is shaped the way it is" in
+  `presales-deck-generator/SKILL.md`.
 - **Versioning is by commit.** `plugin.json` deliberately has no `version` field,
   so Claude Code resolves the version from the marketplace repo's commit SHA and
   users get an update whenever you push. If you ever add a `version`, it pins the

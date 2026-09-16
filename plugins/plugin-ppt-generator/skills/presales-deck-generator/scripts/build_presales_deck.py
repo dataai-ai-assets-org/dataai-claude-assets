@@ -1,12 +1,15 @@
 """
-build_presales_deck.py — renders a pre-sales PowerPoint from the shared
-content library plus per-call dynamic content (AI use cases, industry match).
+build_presales_deck.py — renders a pre-sales PowerPoint entirely from
+per-call dynamic content. There is no shared content library any more; every
+input below is drafted fresh for this one call.
 
 This script does NOT do any research or writing itself — by the time it
 runs, Claude has already:
-  1. researched the target company from public sources (WebSearch/WebFetch)
-  2. drafted 3-4 AI use cases from that research, each with a one-line source
-  3. picked an industry key (or confirmed none fits yet)
+  1. researched the target company and industry from public sources
+     (WebSearch/WebFetch)
+  2. drafted an industry-opportunity dict, or confirmed there wasn't enough
+     to say something specific and credible about this industry
+  3. drafted 3-4 AI use cases from that research, each with a one-line source
 
 Those are passed in as plain Python values below. Keeping research and
 writing OUT of this script is deliberate: an LLM should draft the prose,
@@ -15,7 +18,7 @@ a deterministic script should never invent it.
 This script does NOT produce reference-project slides either. It only adds a
 "References" chapter-divider slide as an anchor point. The actual reference
 slides are spliced in afterwards, verbatim, from a reference deck the user
-supplies — see "Dependency: deck-merger" and Step 5 in
+supplies — see "Dependency: deck-merger" and Step 6 in
 presales-deck-generator/SKILL.md.
 
 Usage: edit the CONFIG block at the bottom (or import build_deck() from
@@ -67,14 +70,14 @@ sys.path.insert(0, os.path.join(ELCA_PPTX_SKILL_DIR, "scripts"))
 
 from pptx import Presentation
 from pptx_helpers import T, LL
-from content_library import INDUSTRY_MODULES
 
 TEMPLATE = os.path.join(ELCA_PPTX_SKILL_DIR, "ELCA PPT Template.pptx")
 
 
 def _pillars_slide(A, layout_name, block, extra_pillars=None):
-    """Render a dict shaped like content_library's pillar blocks onto a
-    Pillars_Ncol layout. `layout_name` must match the pillar count."""
+    """Render a {"title", "subtitle", "pillars": [(heading, bullets), ...]}
+    dict onto a Pillars_Ncol layout. `layout_name` must match the pillar
+    count."""
     s = A(layout_name)
     T(s, 0, block["title"])
     T(s, 1, block["subtitle"])
@@ -86,18 +89,20 @@ def _pillars_slide(A, layout_name, block, extra_pillars=None):
     return s
 
 
-def build_deck(company, industry_key, context, ai_use_cases, out_path):
+def build_deck(company, industry_module, context, ai_use_cases, out_path):
     """
     company: str, e.g. "PostFinance"
-    industry_key: str key into INDUSTRY_MODULES, or None if the call doesn't
-                   map to a known industry yet
+    industry_module: dict {"title", "short_title", "subtitle", "pillars"}
+                      drafted fresh from research (see SKILL.md Step 3), or
+                      None if there wasn't enough to say something specific
+                      and credible about this industry for this call
     context: short free-text description of the deal (used on the title slide)
     ai_use_cases: list of dicts, each {"headline": str, "description": str, "source": str}
                   3 or 4 items — already drafted by Claude from public research
     out_path: where to save the .pptx
 
     Does not take reference-project content — see the module docstring and
-    Step 5 in presales-deck-generator/SKILL.md for how those get merged in
+    Step 6 in presales-deck-generator/SKILL.md for how those get merged in
     afterwards from a user-supplied reference deck.
     """
     prs = Presentation(TEMPLATE)
@@ -122,9 +127,7 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
     # 2. Agenda
     s = A('Agenda 1')
     T(s, 0, 'Agenda')
-    industry_label = INDUSTRY_MODULES.get(industry_key, {}).get(
-        'title', f'{company} — Context & Opportunities'
-    )
+    industry_label = industry_module['title'] if industry_module else f'{company} — Context & Opportunities'
     LL(s, 18, [industry_label, f'Possible AI Use Cases for {company}',
                'References', 'Next Steps'])
     LL(s, 19, ['Where we can help', 'Ideas to discuss and validate together',
@@ -137,22 +140,22 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
         T(s, 0, f'Where We\'re Starting With {company}')
         LL(s, 1, [context])
 
-    # 3. Chapter 01 — Industry module (or an honest gap slide). This is the
-    # deck's first content chapter: the skill carries no general ELCA or
-    # Data & AI Business Line content, only what's specific to this call.
-    # Chapter title must stay short (one line) — the layout's tagline (idx14)
-    # sits at a fixed position right below it, same risk as the title slide.
+    # 3. Chapter 01 — Industry-opportunity slide (or an honest gap slide).
+    # This is the deck's first content chapter: the skill carries no general
+    # ELCA or Data & AI Business Line content, only what's specific to this
+    # call. Chapter title must stay short (one line) — the layout's tagline
+    # (idx14) sits at a fixed position right below it, same risk as the
+    # title slide.
     s = A('Chapter Slide 1')
     T(s, 0, '01')
-    module = INDUSTRY_MODULES.get(industry_key)
-    if module:
-        short_title = module.get('short_title') or (industry_key or company).replace('-', ' ').title()
+    if industry_module:
+        short_title = industry_module.get('short_title') or industry_module['title']
         T(s, 1, short_title)
-        T(s, 14, module['subtitle'])
-        _pillars_slide(A, 'Pillars_4col', module)
+        T(s, 14, industry_module['subtitle'])
+        _pillars_slide(A, 'Pillars_4col', industry_module)
     else:
         T(s, 1, company)
-        T(s, 14, 'No tailored industry module yet for this vertical — filled in for this call.')
+        T(s, 14, 'No tailored industry angle drafted yet for this vertical — filled in for this call.')
         s = A('Text Content only 1')
         T(s, 0, f'What We Understand About {company}')
         LL(s, 1, [context] if context else ['Add what you know about the prospect here.'])
@@ -169,9 +172,9 @@ def build_deck(company, industry_key, context, ai_use_cases, out_path):
     # 5. References — a chapter divider only. This script never renders
     # reference content itself; the actual slides get spliced in right after
     # this divider, verbatim, from a reference deck the user supplies (see
-    # Step 5 in SKILL.md). Run inspect_deck.py on the saved output to find
+    # Step 6 in SKILL.md). Run inspect_deck.py on the saved output to find
     # this slide's exact position before calling merge_decks.py — it shifts
-    # depending on whether the context and industry-module slides above ran.
+    # depending on whether the context and industry-opportunity slides above ran.
     s = A('Chapter Slide 1')
     T(s, 0, '02')
     T(s, 1, 'References')
@@ -212,7 +215,7 @@ if __name__ == '__main__':
     ]
     build_deck(
         company="Example Corp",
-        industry_key=None,
+        industry_module=None,
         context="Pre-Sales Introduction",
         ai_use_cases=demo_use_cases,
         out_path=os.path.join(SCRIPT_DIR, "..", "demo_output.pptx"),
