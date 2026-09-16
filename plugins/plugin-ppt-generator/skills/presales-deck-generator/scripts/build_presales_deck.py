@@ -187,7 +187,7 @@ def build_deck(company, industry_module, context, ai_use_cases, out_path):
     T(s, 14, 'Markus Grob')
     T(s, 16, 'Head of Business Line: Data, Analytics & AI, ELCA')
     T(s, 17, 'markus.grob@elca.ch')
-    T(s, 18, 'www.elca.ch/our-expertise/data-analytics-ai')
+    T(s, 18, 'https://www.elca.ch/offering/ai-data-analytics')
 
     # Rebuild sldIdLst — required whenever building fresh from the template,
     # see elca-pptx SKILL.md Step 5.
