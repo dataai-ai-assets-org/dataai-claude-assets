@@ -2,9 +2,12 @@
 Content library for the presales-deck-generator skill.
 
 This is the single source of truth for the "static" parts of every pre-sales
-deck: general ELCA facts, the Data & AI Business Line content, the reusable
-reference-project library, and industry modules. build_presales_deck.py
-imports this file directly.
+deck: general ELCA facts, the Data & AI Business Line content, and industry
+modules. build_presales_deck.py imports this file directly.
+
+Reference-project slides are NOT maintained here. They're merged in per call
+from a reference deck the user points to in their prompt — see
+"Dependency: deck-merger" and Step 4 in presales-deck-generator/SKILL.md.
 
 WHO EDITS THIS FILE: whoever ELCA's Data & AI BL nominates as skill
 champions (see the department's shared plugin marketplace). No engineering
@@ -136,92 +139,7 @@ DATAAI_BL = {
 }
 
 # ---------------------------------------------------------------------------
-# SECTION 3 — Reference project library
-# ---------------------------------------------------------------------------
-# Curated from "All References OnePager" on SharePoint (PublicCorporateAssets/
-# Corp Decks PPTs/2026). That source deck tracks ~129 references across the
-# BL; only a handful had complete, presentable content at the time this file
-# was written. ADD MORE ENTRIES HERE as champions pull them from the master
-# library — that master deck states these industry totals as of writing:
-# Public Administration 30, Financial Services 21, Transportation &
-# Logistics 21, Retail/Energy/Manufacturing 15, Health & Life Science 15,
-# Other 14, Telecom 9, Defense 4.
-#
-# `industries` uses lowercase-hyphen keys so it can be matched against the
-# --industry argument (see build_presales_deck.py's reference-selection step).
-
-REFERENCES = [
-    {
-        "client": "SBB",
-        "title": "Automated Quality Validation of Survey Data",
-        "industries": ["transportation", "public-sector"],
-        "short_benefit": "Automated a manual survey QA step, freeing experts for complex cases with a full audit trail.",
-        "benefit": (
-            "Automating the final quality check of survey data — previously done by hand by "
-            "Quality Managers — dramatically cut repetitive manual work and freed experts to "
-            "focus on the complex cases, improving throughput and consistency for downstream "
-            "analytics while keeping a full audit trail."
-        ),
-        "technologies": "Snowflake (Snowpark), Spring Batch, Postgres, MLflow, Argo CD/Workflow",
-        "effort": "0.5 FTE since September 2025",
-    },
-    {
-        "client": "ETH Zurich",
-        "title": "BTV-Bot — AI Search Chatbot",
-        "industries": ["education-research", "public-sector"],
-        "short_benefit": "Self-service, source-backed answers from internal docs, cutting repetitive support requests.",
-        "benefit": (
-            "A RAG-based knowledge assistant that gives staff and partners self-service, "
-            "source-backed answers from internal documentation — cutting repetitive support "
-            "requests and making complex knowledge accessible at scale."
-        ),
-        "technologies": "Azure, Terraform, OpenAI, Semantic Kernel, Streamlit, Python, RAG",
-        "effort": "20 person days",
-    },
-    {
-        "client": "ETH Zurich",
-        "title": "RAG-based Guidelines Chatbot",
-        "industries": ["education-research", "public-sector"],
-        "short_benefit": "Version-aware RAG over internal guidelines, with defensible, source-backed answers.",
-        "benefit": (
-            "A second RAG deployment giving self-service access to internal guidelines, with "
-            "version-aware, context-sensitive retrieval and defensible, source-backed answers — "
-            "reducing repetitive support load and improving onboarding."
-        ),
-        "technologies": "Azure (Functions, Event Grid, Storage, AI Search, Document Intelligence, "
-                         "OpenAI), Terraform, Semantic Kernel, Streamlit, Python",
-        "effort": "20 person days (PoC)",
-    },
-    {
-        "client": "Swisscom",
-        "title": "Teradata to AWS Migration — ODCS-based Data Governance",
-        "industries": ["telecom"],
-        "short_benefit": "Made ODCS the vendor-agnostic metadata backbone, so tool changes no longer fragment governance.",
-        "benefit": (
-            "Made the Open Data Contract Standard (ODCS) the vendor-agnostic metadata backbone "
-            "for data products, ownership, quality and SLAs — so tool changes no longer fragment "
-            "governance and the organisation isn't locked to one vendor's roadmap."
-        ),
-        "technologies": "AWS, Datahub, ODCS",
-        "effort": "10 person days",
-    },
-    {
-        "client": "Swisscom",
-        "title": "ODCS and Data Catalog Integration",
-        "industries": ["telecom"],
-        "short_benefit": "Mapped ODCS to the data catalog and industrialised the ingestion across teams.",
-        "benefit": (
-            "Mapped ODCS to the Datahub data-catalog attributes and built the converter that lets "
-            "ODCS-defined metadata flow straight into the catalog — industrialised across "
-            "cross-functional teams."
-        ),
-        "technologies": "Datahub, ODCS",
-        "effort": "10 person days",
-    },
-]
-
-# ---------------------------------------------------------------------------
-# SECTION 4 — Industry modules
+# SECTION 3 — Industry modules
 # ---------------------------------------------------------------------------
 # One entry per industry ELCA DataAI has a tailored slide for. The
 # original brief left this open ("Industry-specific slides (?)") — the
@@ -230,11 +148,9 @@ REFERENCES = [
 # build_presales_deck.py) rather than inventing content for a vertical
 # nobody has actually vetted yet.
 #
-# Key format matches REFERENCES[i]["industries"] entries so a deck can
-# eventually cross-check "do we have both an industry module AND reference
-# proof points for this vertical" — right now Financial Services has a
-# module but the reference library doesn't yet have a Financial Services
-# entry, which is a real, honest gap the skill should surface, not paper over.
+# Keys are lowercase-hyphenated (e.g. "financial-services") so they can also
+# be matched against client/text hints when picking reference slides from the
+# user-supplied reference deck — see Step 4 in presales-deck-generator/SKILL.md.
 
 INDUSTRY_MODULES = {
     "financial-services": {

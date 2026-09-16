@@ -1,6 +1,6 @@
 ---
 name: presales-deck-generator
-description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Pulls together general ELCA slides, Data & AI BL slides, an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and 4-5 reference project slides. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
+description: "Generates a first-pre-sales-call PowerPoint for ELCA's Data, Analytics & AI Business Line, given a company name plus optional industry/context. Pulls together general ELCA slides, Data & AI BL slides, an industry module when one exists, a company-specific AI-use-case slide drafted from public research, and reference-project slides merged in from a reference deck the user points to. Use this skill whenever someone asks to build, generate, or put together a pre-sales deck, sales presentation, or pitch deck for a named prospect or customer in the Data & AI space — even if they just say something like 'can you make me a deck for our call with Acme AG next week' or 'I need slides for the first meeting with Acme'. Also use it when someone wants to update or regenerate an existing pre-sales deck for a different company, or asks what a pre-sales deck for a given industry would look like."
 ---
 
 # Pre-Sales Deck Generator
@@ -21,10 +21,15 @@ be specific to the company in front of you or they're not worth including.
 
 Concretely: `scripts/content_library.py` holds everything that's the same
 every time (general ELCA facts, the BL's mission/stats/domains, industry
-modules, reference projects). `scripts/build_presales_deck.py` assembles a
-deck from that library plus the handful of things that change per call. Your
-job when this skill triggers is to gather those per-call things, then run
-the script — not to write slide content from scratch each time.
+modules). `scripts/build_presales_deck.py` assembles a deck from that library
+plus the handful of things that change per call. Your job when this skill
+triggers is to gather those per-call things, then run the script — not to
+write slide content from scratch each time.
+
+Reference-project slides are the one exception to "maintained library plus a
+handful of per-call things": there's no maintained reference library at all.
+Every call gets its reference slides fresh, merged verbatim from a deck the
+user points to — see Step 4.
 
 ## Dependency: elca-pptx
 
@@ -44,6 +49,20 @@ error listing where it looked. Fix the path (set `ELCA_PPTX_SKILL_DIR`)
 rather than hand-rolling python-pptx calls — that's how decks end up with
 black pillar titles and broken bullets.
 
+## Dependency: deck-merger
+
+Reference-project slides come from the **deck-merger** skill, which ships in
+the separate **plugin-deck-merger** plugin — not bundled here the way
+elca-pptx is. Check it's installed (`/plugin list`) before Step 4; if it
+isn't, tell the user and skip references for this call rather than
+fabricating slide content by hand.
+
+deck-merger's `inspect_deck.py` and `merge_decks.py` are what Step 4 uses.
+Read deck-merger's own SKILL.md if you haven't used it before — the
+principles that matter here are the same ones it's built around: copy slide
+XML verbatim rather than rebuild it, and never silently hide a gap (a hidden
+slide, a housekeeping slide, no matching industry) from the user.
+
 ## Workflow
 
 ### Step 1 — Gather the per-call inputs
@@ -56,7 +75,10 @@ there's no reasonable default. Also try to get:
   company. Match it to a key in `INDUSTRY_MODULES` in
   `scripts/content_library.py` — the current keys are listed at the top of
   that dict. Getting this right matters: it decides which industry module
-  and which reference projects the deck uses.
+  the deck uses, and guides which reference slides you pick in Step 4.
+- **A reference deck**, if the user gave a path or link to one in their
+  prompt. If they didn't, ask once; if they say they don't have one handy,
+  proceed without references for this call (Step 4 covers what to do then).
 - **Context**: deal stage, what's already known about the prospect's
   situation, who's running the call. This becomes the title-slide subtitle
   and, when there's no industry module, the fallback "what we understand"
@@ -120,19 +142,7 @@ a way that damages trust with a real customer:
   (`DATAAI_BL['domains']`) where you can — it should read as something ELCA
   is positioned to deliver, not a generic AI idea anyone could pitch.
 
-### Step 4 — Pick reference projects
-
-Call `select_references(industry_key)` from `build_presales_deck.py` — it
-matches references to the industry and tells you (`matched_by_industry`)
-whether it found a same-industry proof point or had to fall back to
-cross-industry ones. **Don't override this to hide a gap.** If there's no
-same-industry reference yet, the deck should say "cross-industry proof
-points" rather than imply a same-industry relationship that doesn't exist —
-`build_presales_deck.py` handles that labeling automatically as long as you
-don't hand it a hand-picked `selected_references` list that misrepresents
-the match.
-
-### Step 5 — Build the deck
+### Step 4 — Build the base deck
 
 ```python
 import sys, os
@@ -148,9 +158,51 @@ build_deck(
     industry_key="financial-services",   # or None — see content_library.py for valid keys
     context="First call, referred in by their CTO; interested in fraud analytics.",
     ai_use_cases=[...],                   # from Step 3
-    out_path="/path/to/output/Acme_AG_Presales.pptx",
+    out_path="/path/to/output/Acme_AG_Presales_base.pptx",
 )
 ```
+
+This deck ends with a "References" chapter divider (title "04") followed
+immediately by the Contact slide — no reference content yet. That's Step 5.
+
+### Step 5 — Merge in reference-project slides
+
+This step needs the **deck-merger** skill (plugin-deck-merger) and the
+reference deck path/link gathered in Step 1. If there's no reference deck for
+this call, skip straight to Step 6 and say plainly in your response that the
+deck has no reference slides — never invent one to avoid an empty section.
+
+1. **Inventory the reference deck.** Run deck-merger's
+   `inspect_deck.py` on it to see every slide's position, layout name, and
+   opening text (hidden and housekeeping slides included — flag those, same
+   as deck-merger always does).
+2. **Pick slides matching the industry.** Read the inventory for slides
+   whose client, title, or text preview matches `industry_key` (or the
+   company's sector generally). Prefer 3-5 strong, specific proof points
+   over padding with weak ones. If nothing matches the industry, pick the
+   strongest general proof points instead and say so explicitly when you
+   hand the deck over — "cross-industry proof points, no same-industry
+   reference yet" — rather than presenting them as same-industry.
+3. **Locate the insertion point.** Run deck-merger's `inspect_deck.py` on
+   the *base deck from Step 4* to find the exact 1-based position of the
+   "References" chapter-divider slide (title "04") and the slide right
+   after it (the Contact slide). These positions shift depending on whether
+   the context slide (Step 1) and a real industry module (vs. the fallback
+   gap slide) were included, so always look them up on the actual file —
+   never assume fixed numbers.
+4. **Splice the picked slides in with `merge_decks.py`**, using the base
+   deck twice to keep everything before and after the insertion point:
+   ```bash
+   python3 <deck-merger-skill>/scripts/merge_decks.py -o final.pptx \
+       --deck base.pptx       --slides 1-<divider_position> \
+       --deck reference.pptx  --slides <picked-ranges> \
+       --deck base.pptx       --slides <contact_position>
+   ```
+   `base.pptx` stays the first `--deck` overall so its master/theme/size
+   govern the output — the imported reference slides keep inheriting their
+   own master via the same mechanism deck-merger always uses.
+5. Validate the result the way deck-merger's own SKILL.md describes before
+   handing it over.
 
 ### Step 6 — Visually QA every slide
 
@@ -182,7 +234,9 @@ Then `Read` each slide image and check: no text overflow (long company
 names or industry module titles can push pillar titles to 3 lines — shorten
 if so, the same way you'd fix any elca-pptx overflow), pillar titles are
 red, the AI use-case slide's source lines are actually present and legible,
-and the References slide correctly says same-industry vs. cross-industry.
+the merged reference slides render correctly (fonts/theme intact, nothing
+cut off), and your response to the user correctly says same-industry vs.
+cross-industry vs. no references for this call.
 
 ### Step 7 — Deliver as a draft, always
 
@@ -205,12 +259,17 @@ elca-pptx, so BL champions — not just whoever happens to be running this
 session — can maintain `content_library.py` over time. Edits go to the
 plugin repository and reach everyone on the next `/plugin update`. See the
 plugin's commit history for what's changed and when re-pulling from the
-source SharePoint decks (2026 Corporate Deck, DataAI BL intro slides, All
-References OnePager — all under PublicCorporateAssets/Corp Decks PPTs/2026)
-is overdue.
+source SharePoint decks (2026 Corporate Deck and the DataAI BL intro slides,
+under PublicCorporateAssets/Corp Decks PPTs/2026) is overdue.
 
 Adding a new industry module: add an entry to `INDUSTRY_MODULES` following
 the existing `financial-services` example — a title, subtitle, and up to
-four pillars of (heading, bullet-list) tuples. Adding a reference: add an
-entry to `REFERENCES` with real content pulled from a real engagement —
-never fabricate a reference project.
+four pillars of (heading, bullet-list) tuples.
+
+There is nothing to maintain here for references — that content isn't in
+this file. The nearest thing to a reference library is whatever deck the
+user points to per call (ELCA's "All References OnePager" on SharePoint,
+under the same PublicCorporateAssets/Corp Decks PPTs/2026 folder, is the
+usual one). If that link changes or a better one becomes the standard,
+that's a fact worth the user telling Claude at the start of a session, not
+a change to this file.

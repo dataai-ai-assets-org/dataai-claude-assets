@@ -8,3 +8,5 @@ allowed_tools: [Read, Glob, Grep, Skill]
 ---
 
 We have a first discovery call next week with "Northwind Freight", a mid-size logistics and freight company. Put together a pre-sales deck for ELCA's Data, Analytics & AI Business Line to bring to that call.
+
+I don't have a reference-projects deck handy right now — just build the deck without one for this call.
